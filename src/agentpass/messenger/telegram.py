@@ -195,7 +195,7 @@ class TelegramAdapter(MessengerAdapter):
             await query.answer("Invalid callback data")
             return
 
-        # FR5-AC2: only allowed users
+        # only allowed users
         if query.from_user.id not in self._config.allowed_users:
             return  # silently ignore
 

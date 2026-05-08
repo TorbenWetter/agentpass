@@ -83,7 +83,7 @@ class TestSendApproval:
     async def test_calls_bot_send_message_with_correct_text_and_keyboard(
         self, adapter, mock_app, approval_request, choices
     ):
-        """FR5-AC1: sends formatted message with tool signature and inline buttons."""
+        """sends formatted message with tool signature and inline buttons."""
         await adapter.send_approval(approval_request, choices)
 
         mock_app.bot.send_message.assert_awaited_once()
@@ -171,7 +171,7 @@ class TestHandleCallback:
         return update
 
     async def test_allowed_user_triggers_callback(self, adapter):
-        """FR5-AC2: allowed user triggers the registered callback with correct ApprovalResult."""
+        """allowed user triggers the registered callback with correct ApprovalResult."""
         results = []
 
         async def cb(result: ApprovalResult) -> None:
@@ -191,7 +191,7 @@ class TestHandleCallback:
         assert isinstance(results[0].timestamp, float)
 
     async def test_non_allowed_user_silently_ignored(self, adapter):
-        """FR5-AC2: non-allowed user is silently ignored, callback NOT triggered."""
+        """non-allowed user is silently ignored, callback NOT triggered."""
         results = []
 
         async def cb(result: ApprovalResult) -> None:
@@ -224,7 +224,7 @@ class TestHandleCallback:
         assert "req-1" not in adapter._pending
 
     async def test_edits_message_after_allow(self, adapter, mock_app):
-        """FR5-AC5: edits message to compact 'Approved' with tool name."""
+        """edits message to compact 'Approved' with tool name."""
         await adapter.on_approval_callback(AsyncMock())
 
         update = self._make_update(111, "alice", "req-2", "allow")
@@ -238,7 +238,7 @@ class TestHandleCallback:
         assert "ha_call_service" in call_kwargs["text"]
 
     async def test_edits_message_after_deny(self, adapter, mock_app):
-        """FR5-AC5: edits message to compact 'Denied' with tool name."""
+        """edits message to compact 'Denied' with tool name."""
         await adapter.on_approval_callback(AsyncMock())
 
         update = self._make_update(222, "bob", "req-3", "deny")
@@ -282,7 +282,7 @@ class TestHandleCallback:
 
 class TestHandleInvalidCallback:
     async def test_answers_with_expired_message(self, adapter):
-        """FR5-AC4: InvalidCallbackData answers with 'expired' message."""
+        """InvalidCallbackData answers with 'expired' message."""
         update = MagicMock()
         query = AsyncMock()
         query.answer = AsyncMock()
@@ -300,7 +300,7 @@ class TestHandleInvalidCallback:
 
 class TestTimeout:
     async def test_timeout_fires_and_calls_callback_with_deny(self, adapter, mock_app):
-        """FR6-AC1/AC2: timeout resolves as deny with user_id='timeout'."""
+        """timeout resolves as deny with user_id='timeout'."""
         results = []
 
         async def cb(result: ApprovalResult) -> None:
@@ -320,7 +320,7 @@ class TestTimeout:
         assert results[0].user_id == "timeout"
 
     async def test_timeout_edits_message_to_expired(self, adapter, mock_app):
-        """FR6-AC3: timeout does best-effort edit of message to 'Expired'."""
+        """timeout does best-effort edit of message to 'Expired'."""
         await adapter.on_approval_callback(AsyncMock())
 
         adapter.schedule_timeout("req-t2", 0, "51")
@@ -332,7 +332,7 @@ class TestTimeout:
         assert call_kwargs["message_id"] == 51
 
     async def test_timeout_message_edit_failure_does_not_raise(self, adapter, mock_app, caplog):
-        """FR6-AC3: failure to edit message is logged as warning, never blocks."""
+        """failure to edit message is logged as warning, never blocks."""
         mock_app.bot.edit_message_text.side_effect = Exception("network error")
 
         results = []
@@ -371,7 +371,7 @@ class TestTimeout:
 
 class TestRaceSafeResolution:
     async def test_callback_after_timeout_is_noop(self, adapter, mock_app):
-        """FR6-AC4: if timeout fires first, subsequent callback is no-op."""
+        """if timeout fires first, subsequent callback is no-op."""
         results = []
 
         async def cb(result: ApprovalResult) -> None:
@@ -405,7 +405,7 @@ class TestRaceSafeResolution:
         query.answer.assert_awaited_once_with("Already resolved")
 
     async def test_timeout_after_callback_is_noop(self, adapter, mock_app):
-        """FR6-AC4: if callback fires first, subsequent timeout is no-op."""
+        """if callback fires first, subsequent timeout is no-op."""
         results = []
 
         async def cb(result: ApprovalResult) -> None:

@@ -18,7 +18,7 @@ class TestParseArgs:
     """Tests for the parse_args() function."""
 
     def test_defaults(self):
-        """FR10-AC1: Default values for all flags."""
+        """Default values for all flags."""
         from agentpass.__main__ import parse_args
 
         args = parse_args([])
@@ -27,28 +27,28 @@ class TestParseArgs:
         assert args.insecure is False
 
     def test_insecure_flag(self):
-        """FR10-AC1: --insecure flag is recognized."""
+        """--insecure flag is recognized."""
         from agentpass.__main__ import parse_args
 
         args = parse_args(["--insecure"])
         assert args.insecure is True
 
     def test_custom_config_path(self):
-        """FR10-AC1: --config PATH overrides the default."""
+        """--config PATH overrides the default."""
         from agentpass.__main__ import parse_args
 
         args = parse_args(["--config", "custom.yaml"])
         assert args.config == "custom.yaml"
 
     def test_custom_permissions_path(self):
-        """FR10-AC1: --permissions PATH overrides the default."""
+        """--permissions PATH overrides the default."""
         from agentpass.__main__ import parse_args
 
         args = parse_args(["--permissions", "custom-perms.yaml"])
         assert args.permissions == "custom-perms.yaml"
 
     def test_all_flags_combined(self):
-        """FR10-AC1: All flags together."""
+        """All flags together."""
         from agentpass.__main__ import parse_args
 
         args = parse_args(["--insecure", "--config", "c.yaml", "--permissions", "p.yaml"])
@@ -136,11 +136,11 @@ _PATCH_PREFIX = "agentpass.__main__"
 
 
 class TestRunTlsCheck:
-    """NFR1-AC1: TLS requirement enforcement."""
+    """TLS requirement enforcement."""
 
     @pytest.mark.asyncio
     async def test_no_tls_no_insecure_exits(self):
-        """NFR1-AC1: Without TLS config and without --insecure, run() calls sys.exit(1)."""
+        """Without TLS config and without --insecure, run() calls sys.exit(1)."""
         from agentpass.__main__ import run
 
         args = argparse.Namespace(config="c.yaml", permissions="p.yaml", insecure=False)
@@ -159,7 +159,7 @@ class TestRunTlsCheck:
 
     @pytest.mark.asyncio
     async def test_no_tls_with_insecure_proceeds(self):
-        """NFR1-AC1: With --insecure, startup proceeds even without TLS."""
+        """With --insecure, startup proceeds even without TLS."""
         from agentpass.__main__ import run
 
         args = argparse.Namespace(config="c.yaml", permissions="p.yaml", insecure=True)
@@ -202,11 +202,11 @@ class TestRunTlsCheck:
 
 
 class TestRunStartupSequence:
-    """FR10-AC2: Startup sequence verification."""
+    """Startup sequence verification."""
 
     @pytest.mark.asyncio
     async def test_startup_order(self):
-        """FR10-AC2: Startup calls components in correct order:
+        """Startup calls components in correct order:
         config -> db -> services -> health checks -> PTB start -> WS serve -> log ready.
         """
         from agentpass.__main__ import run
@@ -285,7 +285,7 @@ class TestRunStartupSequence:
 
     @pytest.mark.asyncio
     async def test_logs_ready_message(self, caplog):
-        """FR10-AC2: Logs 'ready' when startup completes."""
+        """Logs 'ready' when startup completes."""
         from agentpass.__main__ import run
 
         args = argparse.Namespace(config="c.yaml", permissions="p.yaml", insecure=True)
@@ -326,11 +326,11 @@ class TestRunStartupSequence:
 
 
 class TestRunHealthCheck:
-    """NFR3-AC1: HA health check failure is non-fatal."""
+    """HA health check failure is non-fatal."""
 
     @pytest.mark.asyncio
     async def test_failed_health_check_logs_warning(self, caplog):
-        """NFR3-AC1: Failed HA health check logs warning but does not prevent startup."""
+        """Failed HA health check logs warning but does not prevent startup."""
         from agentpass.__main__ import run
 
         args = argparse.Namespace(config="c.yaml", permissions="p.yaml", insecure=True)
@@ -374,7 +374,7 @@ class TestRunHealthCheck:
 
     @pytest.mark.asyncio
     async def test_successful_health_check_no_warning(self, caplog):
-        """NFR3-AC1: Successful HA health check does NOT log a warning."""
+        """Successful HA health check does NOT log a warning."""
         from agentpass.__main__ import run
 
         args = argparse.Namespace(config="c.yaml", permissions="p.yaml", insecure=True)
@@ -416,11 +416,11 @@ class TestRunHealthCheck:
 
 
 class TestRunShutdownSequence:
-    """FR10-AC4: Shutdown sequence."""
+    """Shutdown sequence."""
 
     @pytest.mark.asyncio
     async def test_shutdown_resolves_pending_and_closes_all(self):
-        """FR10-AC4: Shutdown resolves pending, stops telegram, stops PTB, closes HA, closes DB."""
+        """Shutdown resolves pending, stops telegram, stops PTB, closes HA, closes DB."""
         from agentpass.__main__ import run
 
         args = argparse.Namespace(config="c.yaml", permissions="p.yaml", insecure=True)
@@ -466,11 +466,11 @@ class TestRunShutdownSequence:
 
 
 class TestRunSignalHandling:
-    """FR10-AC3: Signal handling registration."""
+    """Signal handling registration."""
 
     @pytest.mark.asyncio
     async def test_signal_handlers_registered(self):
-        """FR10-AC3: SIGTERM and SIGINT handlers are registered."""
+        """SIGTERM and SIGINT handlers are registered."""
         from agentpass.__main__ import run
 
         args = argparse.Namespace(config="c.yaml", permissions="p.yaml", insecure=True)
@@ -520,11 +520,11 @@ class TestRunSignalHandling:
 
 
 class TestRunPtbLifecycle:
-    """FR10-AC5: PTB uses manual lifecycle, NOT run_polling()."""
+    """PTB uses manual lifecycle, NOT run_polling()."""
 
     @pytest.mark.asyncio
     async def test_ptb_manual_lifecycle(self):
-        """FR10-AC5: PTB Application is used as async context manager with start/stop."""
+        """PTB Application is used as async context manager with start/stop."""
         from agentpass.__main__ import run
 
         args = argparse.Namespace(config="c.yaml", permissions="p.yaml", insecure=True)
@@ -636,11 +636,11 @@ class TestRunTlsContext:
 
 
 class TestRunTokenNeverLogged:
-    """NFR1-AC2: Agent token must never be logged."""
+    """Agent token must never be logged."""
 
     @pytest.mark.asyncio
     async def test_token_not_in_logs(self, caplog):
-        """NFR1-AC2: The agent token does not appear in any log message."""
+        """The agent token does not appear in any log message."""
         from agentpass.__main__ import run
 
         args = argparse.Namespace(config="c.yaml", permissions="p.yaml", insecure=True)

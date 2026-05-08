@@ -194,7 +194,7 @@ async def gateway_env() -> AsyncIterator[tuple[str, MockMessenger, GatewayServer
 
 
 class TestAutoAllowedRequest:
-    """FR10-AC3: An auto-allowed request flows through the real stack end-to-end."""
+    """An auto-allowed request flows through the real stack end-to-end."""
 
     async def test_auto_allowed_request(self, gateway_env):
         url, _messenger, _gateway, _db = gateway_env
@@ -206,7 +206,7 @@ class TestAutoAllowedRequest:
 
 
 class TestPolicyDeniedRequest:
-    """FR10-AC4: A policy-denied request raises AgentPassDenied with -32003."""
+    """A policy-denied request raises AgentPassDenied with -32003."""
 
     async def test_policy_denied_request(self, gateway_env):
         url, _messenger, _gateway, _db = gateway_env
@@ -224,7 +224,7 @@ class TestPolicyDeniedRequest:
 
 
 class TestAskApprovedRequest:
-    """FR10-AC5: An ask-flow request approved by the human returns the result."""
+    """An ask-flow request approved by the human returns the result."""
 
     async def test_ask_approved_request(self, gateway_env):
         url, messenger, _gateway, _db = gateway_env
@@ -250,7 +250,7 @@ class TestAskApprovedRequest:
 
 
 class TestAskDeniedRequest:
-    """FR10-AC6: An ask-flow request denied by the human raises AgentPassDenied."""
+    """An ask-flow request denied by the human raises AgentPassDenied."""
 
     async def test_ask_denied_request(self, gateway_env):
         url, messenger, _gateway, _db = gateway_env
@@ -276,7 +276,7 @@ class TestAskDeniedRequest:
 
 
 class TestOfflineRetrieval:
-    """FR10-AC7: Results resolved while agent is offline can be retrieved later."""
+    """Results resolved while agent is offline can be retrieved later."""
 
     async def test_offline_retrieval(self, gateway_env):
         url, messenger, _gateway, _db = gateway_env

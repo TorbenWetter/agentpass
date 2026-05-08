@@ -7,13 +7,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 
 class TestPackageExports:
     def test_import_client(self):
-        """FR7-AC1: from agentpass import AgentPassClient works."""
+        """from agentpass import AgentPassClient works."""
         from agentpass import AgentPassClient
 
         assert AgentPassClient is not None
 
     def test_import_errors(self):
-        """FR7-AC2: from agentpass import error classes works."""
+        """from agentpass import error classes works."""
         from agentpass import (
             AgentPassConnectionError,
             AgentPassDenied,
@@ -57,7 +57,7 @@ class TestPackageExports:
 
 class TestDockerFiles:
     def test_dockerfile_exists_and_has_from(self):
-        """FR8-AC1: Dockerfile exists and uses python:3.12-slim."""
+        """Dockerfile exists and uses python:3.12-slim."""
         dockerfile = PROJECT_ROOT / "Dockerfile"
         assert dockerfile.exists()
         content = dockerfile.read_text()
@@ -76,7 +76,7 @@ class TestDockerFiles:
         assert "unless-stopped" in content
 
     def test_dockerignore_exists(self):
-        """NFR2-AC2: .dockerignore excludes tests, docs, .git, etc."""
+        """.dockerignore excludes tests, docs, .git, etc."""
         di = PROJECT_ROOT / ".dockerignore"
         assert di.exists()
         content = di.read_text()

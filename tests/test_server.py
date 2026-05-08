@@ -182,7 +182,7 @@ class TestRateLimiter:
 
 class TestAuthentication:
     async def test_auth_correct_token_succeeds(self):
-        """FR2-AC1 / FR2-AC4: Auth with correct token returns authenticated."""
+        """Auth with correct token returns authenticated."""
         server = _make_server()
         ws = MockWebSocket()
         ws.enqueue(_auth_msg())
@@ -194,7 +194,7 @@ class TestAuthentication:
         assert resp["id"] == "auth-1"
 
     async def test_auth_wrong_token_closes(self):
-        """FR2-AC1: Auth with wrong token returns -32005 and closes."""
+        """Auth with wrong token returns -32005 and closes."""
         server = _make_server()
         ws = MockWebSocket()
         ws.enqueue(_auth_msg(token="wrong-token"))
@@ -206,7 +206,7 @@ class TestAuthentication:
         assert ws.closed is True
 
     async def test_non_auth_before_auth_closes(self):
-        """FR2-AC3: Non-auth message before auth returns -32005 and closes."""
+        """Non-auth message before auth returns -32005 and closes."""
         server = _make_server()
         ws = MockWebSocket()
         ws.enqueue(_tool_request_msg())
@@ -218,7 +218,7 @@ class TestAuthentication:
         assert ws.closed is True
 
     async def test_auth_timeout_closes(self):
-        """FR2-AC2: Auth must complete within AUTH_TIMEOUT seconds."""
+        """Auth must complete within AUTH_TIMEOUT seconds."""
         server = _make_server()
         ws = MockWebSocket()
         # Don't enqueue anything — recv() will hang
@@ -251,7 +251,7 @@ class TestAuthentication:
 
 class TestToolRequests:
     async def test_allow_executes_immediately(self):
-        """FR3-AC2: allow -> execute immediately and return result."""
+        """allow -> execute immediately and return result."""
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.ALLOW
         executor = AsyncMock(spec=Executor)
@@ -273,7 +273,7 @@ class TestToolRequests:
         assert tool_resp["id"] == "req-1"
 
     async def test_deny_returns_policy_denied(self):
-        """FR3-AC2: deny -> -32003."""
+        """deny -> -32003."""
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.DENY
         server = _make_server(engine=engine)
@@ -289,7 +289,7 @@ class TestToolRequests:
         assert tool_resp["error"]["code"] == POLICY_DENIED
 
     async def test_ask_triggers_approval_flow(self):
-        """FR3-AC3: ask -> triggers approval flow, deferred until resolved."""
+        """ask -> triggers approval flow, deferred until resolved."""
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.ASK
         messenger = AsyncMock(spec=MessengerAdapter)
@@ -341,7 +341,7 @@ class TestToolRequests:
         assert tool_responses[0]["result"]["status"] == "executed"
 
     async def test_ask_denied_by_user(self):
-        """FR3-AC3: ask -> denied by user returns -32001."""
+        """ask -> denied by user returns -32001."""
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.ASK
         messenger = AsyncMock(spec=MessengerAdapter)
@@ -379,7 +379,7 @@ class TestToolRequests:
         assert tool_responses[0]["error"]["code"] == APPROVAL_DENIED
 
     async def test_ask_timeout(self):
-        """FR3-AC3: ask -> timeout returns -32002."""
+        """ask -> timeout returns -32002."""
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.ASK
         messenger = AsyncMock(spec=MessengerAdapter)
@@ -417,7 +417,7 @@ class TestToolRequests:
         assert tool_responses[0]["error"]["code"] == APPROVAL_TIMEOUT
 
     async def test_multiple_concurrent_requests(self):
-        """FR3-AC4: Multiple concurrent tool_requests each get own task."""
+        """Multiple concurrent tool_requests each get own task."""
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.ALLOW
         executor = AsyncMock(spec=Executor)
@@ -439,7 +439,7 @@ class TestToolRequests:
         assert ids == {"auth-1", "r1", "r2", "r3"}
 
     async def test_malformed_json_returns_parse_error(self):
-        """FR3-AC5: Malformed JSON returns -32700."""
+        """Malformed JSON returns -32700."""
         server = _make_server()
         ws = MockWebSocket()
         ws.enqueue(_auth_msg())
@@ -452,7 +452,7 @@ class TestToolRequests:
         assert error_resp["error"]["code"] == PARSE_ERROR
 
     async def test_missing_method_returns_invalid_request(self):
-        """FR3-AC5: Missing method field returns -32600."""
+        """Missing method field returns -32600."""
         server = _make_server()
         ws = MockWebSocket()
         ws.enqueue(_auth_msg())
@@ -485,7 +485,7 @@ class TestToolRequests:
         assert error_resp["error"]["code"] == METHOD_NOT_FOUND
 
     async def test_missing_tool_name_returns_invalid_request(self):
-        """FR3-AC5: Missing tool name in tool_request returns -32600."""
+        """Missing tool name in tool_request returns -32600."""
         server = _make_server()
         ws = MockWebSocket()
         ws.enqueue(_auth_msg())
@@ -531,7 +531,7 @@ class TestToolRequests:
 
 class TestRateLimiting:
     async def test_request_rate_limit_exceeded(self):
-        """FR4-AC1/AC3: Exceeding max_requests_per_minute returns -32006."""
+        """Exceeding max_requests_per_minute returns -32006."""
         rate_config = RateLimitConfig(max_requests_per_minute=2, max_pending_approvals=10)
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.ALLOW
@@ -557,7 +557,7 @@ class TestRateLimiting:
         assert rate_limited[0]["id"] == "r3"
 
     async def test_pending_approval_limit_exceeded(self):
-        """FR4-AC2/AC3: Exceeding max_pending_approvals returns -32006."""
+        """Exceeding max_pending_approvals returns -32006."""
         rate_config = RateLimitConfig(max_requests_per_minute=60, max_pending_approvals=1)
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.ASK
@@ -600,7 +600,7 @@ class TestRateLimiting:
 
 class TestConnectionManagement:
     async def test_second_connection_rejected(self):
-        """FR1-AC3: Server rejects second concurrent connection."""
+        """Server rejects second concurrent connection."""
         server = _make_server()
 
         ws1 = MockWebSocket()
@@ -632,7 +632,7 @@ class TestConnectionManagement:
 
 class TestAuditLogging:
     async def test_tool_request_logged(self):
-        """FR11-AC1: Every tool request is logged with decision."""
+        """Every tool request is logged with decision."""
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.ALLOW
         executor = AsyncMock(spec=Executor)
@@ -653,7 +653,7 @@ class TestAuditLogging:
         assert audit_entry.request_id  # UUID, not msg_id
 
     async def test_deny_logged(self):
-        """FR11-AC1: Deny decision is logged."""
+        """Deny decision is logged."""
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.DENY
         db = AsyncMock(spec=Database)
@@ -677,7 +677,7 @@ class TestAuditLogging:
 
 class TestPersistence:
     async def test_get_pending_results(self):
-        """FR8-AC4: Agent retrieves stored results via get_pending_results."""
+        """Agent retrieves stored results via get_pending_results."""
         db = AsyncMock(spec=Database)
         db.get_completed_results = AsyncMock(return_value=[])
         db.delete_completed_results = AsyncMock()
@@ -737,7 +737,7 @@ class TestRealWebSocket:
     """Integration tests using actual WebSocket connections."""
 
     async def test_full_auth_handshake(self):
-        """FR2-AC4: Full auth handshake over real WebSocket."""
+        """Full auth handshake over real WebSocket."""
         from websockets.asyncio.client import connect as ws_connect
         from websockets.asyncio.server import serve as ws_serve
 
@@ -758,7 +758,7 @@ class TestRealWebSocket:
                 assert resp["result"]["status"] == "authenticated"
 
     async def test_tool_request_allow_real_ws(self):
-        """FR3-AC2: tool_request -> allow -> result over real WebSocket."""
+        """tool_request -> allow -> result over real WebSocket."""
         from websockets.asyncio.client import connect as ws_connect
         from websockets.asyncio.server import serve as ws_serve
 
@@ -789,7 +789,7 @@ class TestRealWebSocket:
                 assert resp["result"]["data"] == {"brightness": 100}
 
     async def test_tool_request_deny_real_ws(self):
-        """FR3-AC2: tool_request -> deny -> error over real WebSocket."""
+        """tool_request -> deny -> error over real WebSocket."""
         from websockets.asyncio.client import connect as ws_connect
         from websockets.asyncio.server import serve as ws_serve
 
@@ -817,7 +817,7 @@ class TestRealWebSocket:
                 assert resp["error"]["code"] == POLICY_DENIED
 
     async def test_malformed_json_real_ws(self):
-        """FR3-AC5: Malformed JSON over real WebSocket returns -32700."""
+        """Malformed JSON over real WebSocket returns -32700."""
         from websockets.asyncio.client import connect as ws_connect
         from websockets.asyncio.server import serve as ws_serve
 
@@ -1033,7 +1033,7 @@ class TestOfflineApprovalFlow:
 
 class TestAuditResolution:
     async def test_audit_updated_on_approval_allow(self):
-        """FR11-AC2: audit entry updated with resolution after approval resolves."""
+        """audit entry updated with resolution after approval resolves."""
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.ASK
         messenger = AsyncMock(spec=MessengerAdapter)
@@ -1077,7 +1077,7 @@ class TestAuditResolution:
         assert call_kwargs["resolved_by"] == "12345"
 
     async def test_audit_updated_on_approval_deny(self):
-        """FR11-AC2: audit entry updated on denial."""
+        """audit entry updated on denial."""
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.ASK
         messenger = AsyncMock(spec=MessengerAdapter)
@@ -1117,7 +1117,7 @@ class TestAuditResolution:
         assert call_kwargs["resolved_by"] == "67890"
 
     async def test_audit_updated_on_timeout(self):
-        """FR11-AC2: audit entry updated on timeout."""
+        """audit entry updated on timeout."""
         engine = MagicMock(spec=PermissionEngine)
         engine.evaluate.return_value = Decision.ASK
         messenger = AsyncMock(spec=MessengerAdapter)
